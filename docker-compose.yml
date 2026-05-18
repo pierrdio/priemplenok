@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # ─── Next.js приложение ───────────────────────────────
+  priemplenok:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: priemplenok
+    restart: unless-stopped
+    ports:
+      - "80:3000"       # Доступ к приложению на порту 80
+    env_file:
+      - .env.local
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:ggraas12H@host.docker.internal:5432/gff-priemplenok
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - app-network
+
+  # ─── Локальный DNS (резолвит priemplenok для всей сети) ──
+  dnsmasq:
+    image: jpillora/dnsmasq
+    container_name: dnsmasq
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./dnsmasq.conf:/etc/dnsmasq.conf
+    networks:
+      - app-network
+
+  # ─── Portainer (UI управления Docker) ────────────────
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"     # HTTPS-интерфейс Portainer
+      - "9000:9000"     # HTTP-интерфейс Portainer (опционально)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock   # Доступ к Docker API
+      - portainer_data:/data                         # Персистентные данные
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  portainer_data:

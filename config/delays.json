@@ -1,0 +1,17 @@
+{
+  "default_hours": 48,
+  "statuses": {
+    "coordinating":  24,
+    "accepted":      48,
+    "in_lab":        72,
+    "developing":   120,
+    "inspection":    72,
+    "defect_report": 48,
+    "ultrasonic":    72,
+    "order_desk":    48,
+    "scanning":      96,
+    "ready_download": 72,
+    "ready_pickup":  168,
+    "completed":    null
+  }
+}

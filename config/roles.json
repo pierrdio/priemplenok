@@ -1,0 +1,26 @@
+[
+  {
+    "code": "admin",
+    "label": "Администратор",
+    "can_create_orders": true,
+    "statuses": ["*"]
+  },
+  {
+    "code": "coordinator",
+    "label": "Координатор",
+    "can_create_orders": true,
+    "statuses": ["coordinating", "accepted", "ready_pickup", "completed"]
+  },
+  {
+    "code": "lab",
+    "label": "Лаборатория",
+    "can_create_orders": false,
+    "statuses": ["in_lab", "developing", "inspection", "defect_report", "ultrasonic", "order_desk"]
+  },
+  {
+    "code": "scanner",
+    "label": "Сканирование",
+    "can_create_orders": false,
+    "statuses": ["scanning", "ready_download"]
+  }
+]
