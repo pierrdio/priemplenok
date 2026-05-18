@@ -21,6 +21,14 @@
    ```
    DATABASE_URL=postgresql://user:password@localhost:5432/priemplenok
    AUTH_SECRET=<случайная строка, минимум 32 символа>
+   NEXT_PUBLIC_BASE_URL=http://ваш_адрес
+
+   # Заполните для рассылки уведомление
+   SMTP_HOST=smtp.gff-rf.ru
+   SMTP_PORT=465
+   SMTP_USER=gff@gff-rf.ru
+   SMTP_PASS=пароль
+   SMTP_FROM=gff@gff-rf.ru
    ```
 
 2. Установите зависимости и примените схему БД:
