@@ -4,11 +4,19 @@ import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import FilmMaterialSelect from '@/components/FilmMaterialSelect'
+
+interface StoredItem {
+  film_title: string
+  description: string
+}
 
 interface ItemDraft {
   film_title: string
   description: string
 }
+
+const emptyDraft: ItemDraft = { film_title: '', description: '' }
 
 function mask(v: string) {
   return v.replace(/[^а-яёА-ЯЁa-zA-Z0-9 .,\-_()/:'"«»№]/g, '')
@@ -24,15 +32,15 @@ export default function NewOrderPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const [items, setItems] = useState<ItemDraft[]>([])
-  const [draft, setDraft] = useState<ItemDraft>({ film_title: '', description: '' })
+  const [items, setItems] = useState<StoredItem[]>([])
+  const [draft, setDraft] = useState<ItemDraft>(emptyDraft)
   const titleRef = useRef<HTMLInputElement>(null)
 
   function commitDraft() {
     const title = draft.film_title.trim()
     if (!title) return
-    setItems((prev) => [...prev, { film_title: title, description: draft.description.trim() }])
-    setDraft({ film_title: '', description: '' })
+    setItems((prev) => [...prev, { film_title: title, description: draft.description }])
+    setDraft(emptyDraft)
     titleRef.current?.focus()
   }
 
@@ -47,7 +55,7 @@ export default function NewOrderPage() {
 
     const form = e.currentTarget
     const pending = draft.film_title.trim()
-      ? [{ film_title: draft.film_title.trim(), description: draft.description.trim() }]
+      ? [{ film_title: draft.film_title.trim(), description: draft.description }]
       : []
 
     const data = {
@@ -139,7 +147,6 @@ export default function NewOrderPage() {
             Позиции{items.length > 0 && <span className="normal-case font-normal ml-1">({items.length})</span>}
           </p>
 
-          {/* Бейджи добавленных позиций */}
           {items.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {items.map((item, idx) => (
@@ -167,7 +174,6 @@ export default function NewOrderPage() {
             </div>
           )}
 
-          {/* Поля новой позиции */}
           <div className="space-y-2">
             <input
               ref={titleRef}
@@ -178,13 +184,9 @@ export default function NewOrderPage() {
               className="w-full border border-slate-300 px-3 py-2 text-sm rounded focus:outline-none focus:border-slate-500"
               placeholder="Название фильма"
             />
-            <input
-              type="text"
+            <FilmMaterialSelect
               value={draft.description}
-              onChange={(e) => setDraft((d) => ({ ...d, description: mask(e.target.value) }))}
-              onKeyDown={(e) => { maskKeyDown(e); if (e.key === 'Enter') { e.preventDefault(); commitDraft() } }}
-              className="w-full border border-slate-300 px-3 py-2 text-sm rounded focus:outline-none focus:border-slate-500"
-              placeholder="Исходные материалы (н/ф, кинофоно...)"
+              onChange={(v) => setDraft((d) => ({ ...d, description: v }))}
             />
           </div>
 

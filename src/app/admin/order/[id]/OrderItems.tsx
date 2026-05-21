@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { OrderItem } from '@/lib/order-types'
+import FilmMaterialSelect from '@/components/FilmMaterialSelect'
 
 interface Props {
   orderId: string
@@ -98,12 +99,10 @@ export default function OrderItems({ orderId, initialItems }: Props) {
                   className="w-full border border-slate-300 px-2.5 py-1.5 text-sm rounded focus:outline-none focus:border-slate-500"
                   placeholder="Название фильма"
                 />
-                <input
-                  type="text"
+                <FilmMaterialSelect
                   value={editState.description}
-                  onChange={(e) => setEditState((s) => ({ ...s, description: e.target.value }))}
-                  className="w-full border border-slate-300 px-2.5 py-1.5 text-sm rounded focus:outline-none focus:border-slate-500"
-                  placeholder="Исходные материалы"
+                  onChange={(v) => setEditState((s) => ({ ...s, description: v }))}
+                  size="sm"
                 />
                 <div className="flex gap-2">
                   <button
@@ -164,12 +163,10 @@ export default function OrderItems({ orderId, initialItems }: Props) {
             placeholder="Название фильма"
             onKeyDown={(e) => e.key === 'Enter' && addItem()}
           />
-          <input
-            type="text"
+          <FilmMaterialSelect
             value={addState.description}
-            onChange={(e) => setAddState((s) => ({ ...s, description: e.target.value }))}
-            className="w-full border border-slate-300 px-2.5 py-1.5 text-sm rounded focus:outline-none focus:border-slate-500"
-            placeholder="Исходные материалы"
+            onChange={(v) => setAddState((s) => ({ ...s, description: v }))}
+            size="sm"
           />
           <div className="flex gap-2">
             <button
