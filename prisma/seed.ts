@@ -1,7 +1,10 @@
-import { PrismaClient } from '../src/generated/prisma'
+import 'dotenv/config'
+import { PrismaClient } from '../src/generated/prisma/client.ts'
+import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+const prisma = new PrismaClient({ adapter })
 
 const STATUSES = [
   {
@@ -94,8 +97,14 @@ const STATUSES = [
   },
 ]
 
+const USERS = [
+  { username: 'admin',       password: 'admin123',       role: 'admin' },
+  { username: 'coordinator', password: 'coordinator123', role: 'coordinator' },
+  { username: 'lab',         password: 'lab123',         role: 'lab' },
+  { username: 'scanner',     password: 'scanner123',     role: 'scanner' },
+]
+
 async function main() {
-  // Статусы
   for (const status of STATUSES) {
     await prisma.statusConfig.upsert({
       where: { code: status.code },
@@ -105,13 +114,14 @@ async function main() {
   }
   console.log(`Seeded ${STATUSES.length} statuses`)
 
-  // Администратор по умолчанию (только если нет ни одного)
-  const count = await prisma.admin.count()
-  if (count === 0) {
-    const password = process.env.ADMIN_SEED_PASSWORD ?? 'admin123'
-    const hash = await bcrypt.hash(password, 12)
-    await prisma.admin.create({ data: { username: 'admin', password_hash: hash } })
-    console.log(`Created admin user (password: ${password})`)
+  for (const u of USERS) {
+    const hash = await bcrypt.hash(u.password, 12)
+    await prisma.user.upsert({
+      where: { username: u.username },
+      update: { password_hash: hash, role: u.role },
+      create: { username: u.username, password_hash: hash, role: u.role },
+    })
+    console.log(`Upserted user: ${u.username} (${u.role}) — password: ${u.password}`)
   }
 }
 
